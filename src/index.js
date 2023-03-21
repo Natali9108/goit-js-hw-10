@@ -23,12 +23,13 @@ function fetchCountries(name) {
 }
 
 function createCountryCard(country) {
-  return country.map(
-    ({ name, capital, population, flags, languages }) =>
-      `<div class="country-wrapper">
+  return country
+    .map(
+      ({ name, capital, population, flags, languages }) =>
+        `<div class="country-wrapper">
           <img class="country-flag" src="${flags.svg}" alt="${
-        flags.alt
-      }" width='40' height='30'/>
+          flags.alt
+        }" width='40' height='30'/>
         <h1 class="country-title">${name.official}</h1></div>
         <ul class="country-list">
         <li class="country-item">
@@ -42,9 +43,11 @@ function createCountryCard(country) {
       <span class="country-property-value">${Object.values(
         languages
       )}</span> </li></ul>`
-  );
+    )
+    .join('');
 }
 
 function renderCountryCard(countryName) {
   refs.countryInfo.innerHTML = createCountryCard(countryName);
+  console.log(refs.countryInfo);
 }
