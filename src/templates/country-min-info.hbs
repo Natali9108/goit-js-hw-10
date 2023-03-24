@@ -1,0 +1,14 @@
+{{#each this}}
+  <div class='country-wrapper'>
+    <img
+      class='country-flag'
+      src='{{this.flags.svg}}'
+      alt='${
+          flags.alt
+        }'
+      width='30'
+      height='20'
+    />
+    <h1 class='country-title'>{{this.name.official}}
+      <style>.country-title { font-size: 24px; font-weight:500}</style></h1></div>
+{{/each}}

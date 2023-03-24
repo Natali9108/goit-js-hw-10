@@ -1,53 +1,45 @@
 import './css/styles.css';
+import RestCountriesApi from './fetchCountries';
+import createCountryCards from './templates/country.hbs';
+import createMinCountryCards from './templates/country-min-info.hbs';
+import lodashDebounce from 'lodash.debounce';
+import Notiflix from 'notiflix';
 
 const refs = {
   countryInfo: document.querySelector('.country-info'),
   input: document.querySelector('#search-box'),
 };
 const DEBOUNCE_DELAY = 300;
+const restCountriesApi = new RestCountriesApi();
 
-refs.input.addEventListener('input', handelSeachCountryInput);
+refs.input.addEventListener(
+  'input',
+  lodashDebounce(handelSeachCountryInput, DEBOUNCE_DELAY)
+);
 
 function handelSeachCountryInput(evt) {
-  const searchCountry = evt.target.value;
-  fetchCountries(searchCountry).then(renderCountryCard);
-}
+  restCountriesApi.name = evt.target.value.trim();
 
-function fetchCountries(name) {
-  return fetch(
-    `https://restcountries.com/v3.1/name/${name}?fields=name,capital,population,flags,languages
-    `
-  ).then(response => {
-    return response.json();
-  });
-}
-
-function createCountryCard(country) {
-  return country
-    .map(
-      ({ name, capital, population, flags, languages }) =>
-        `<div class="country-wrapper">
-          <img class="country-flag" src="${flags.svg}" alt="${
-          flags.alt
-        }" width='40' height='30'/>
-        <h1 class="country-title">${name.official}</h1></div>
-        <ul class="country-list">
-        <li class="country-item">
-        <p class="country-property">Capital:</p>
-         <span class="country-property-value">${capital}</span></li>
-      <li class="country-item">
-      <p class="country-property">Population:</p>
-       <span class="country-property-value">${population}</span> </li>
-      <li class="country-item">
-      <p class="country-property">Language:</p> 
-      <span class="country-property-value">${Object.values(
-        languages
-      )}</span> </li></ul>`
-    )
-    .join('');
+  if (restCountriesApi.name === '') {
+    return (refs.countryInfo.textContent = '');
+  }
+  return restCountriesApi
+    .fetchCountries()
+    .then(renderCountryCard)
+    .catch(errorMessage);
 }
 
 function renderCountryCard(countryName) {
-  refs.countryInfo.innerHTML = createCountryCard(countryName);
-  console.log(refs.countryInfo);
+  if (countryName.length >= 10) {
+    Notiflix.Notify.info(
+      'Too many matches found. Please enter a more specific name.'
+    );
+  } else if (countryName.length < 10 && countryName.length >= 2) {
+    return (refs.countryInfo.innerHTML = createMinCountryCards(countryName));
+  }
+  return (refs.countryInfo.innerHTML = createCountryCards(countryName));
+}
+
+function errorMessage() {
+  Notiflix.Notify.failure('Oops, there is no country with that name');
 }

@@ -26,8 +26,6 @@ body {
 }
 
 .country-wrapper {
-  margin-top: 20px;
-  margin-bottom: 20px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -35,7 +33,7 @@ body {
 
 .country-title {
   margin: 0;
-  font-size: 40px;
+  /* font-size: 32px; */
 }
 
 .country-list {
